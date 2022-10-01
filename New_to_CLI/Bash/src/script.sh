@@ -42,7 +42,3 @@ for ((i=0; i<N; i++)){
 }
 
 echo "End time of script ${END_TIME}" >> ${TEAM_NAME}.txt
-  
-
-
-
