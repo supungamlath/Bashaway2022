@@ -2,24 +2,30 @@ import moviepy.editor as mp
 import pylrc
 
 def get_lyrics():
-    lrc_file = open('example.lrc')
-lrc_string = ''.join(lrc_file.readlines())
-lrc_file.close()
-
-subs = pylrc.parse(lrc_string
+    with open('input/song.lrc') as lrc_file:
+        lrc_string = ''.join(lrc_file.readlines())
+        return pylrc.parse(lrc_string)
 
 def task():
     audio = mp.AudioFileClip("input/song.mp3")
-    image_clip =  mp.ImageClip("input/background.jpg").set_duration(audio.duration)
-    # w,h = moviesize = out_video.size
-    text = mp.TextClip("The Art of Adding Text on Video", font='Liberation-Sans', color="white", fontsize=34)
+    image_clip =  mp.ImageClip("input/background.jpg")
     video_clip = image_clip.set_audio(audio)
-    # txt_mov = txt_col.set_pos( lambda t: (max(w/30,int(w-0.5*w*t)),max(5*h/6,int(100*t))) )
-    
-    video_clip = mp.CompositeVideoClip([video_clip, text])
 
-    video_clip.set_duration(audio.duration).write_videofile("output/music_video.mp4",fps=24,codec="libx264")
+    lyrics = get_lyrics()
+    text_clips = []
 
+    for i, lyric in enumerate(lyrics): 
+        duration = 5
+        if (lyric != lyrics[-1]):
+            duration = lyrics[i+1].time - lyric.time
+
+        text = mp.TextClip(lyric.text, font='Liberation-Sans', color="white", fontsize=100, size=(video_clip.size[0]-20, video_clip.size[1]-20), method="caption")
+        text = text.set_duration(duration).set_start(lyric.time, change_end=True).set_position(("center","center"))
+        text_clips.append(text)    
+
+    video_clip = mp.CompositeVideoClip([video_clip, *text_clips]).set_duration(audio.duration)
+
+    video_clip.write_videofile("output/music_video.mp4", fps=22)
 
 
 if __name__ == "__main__":
