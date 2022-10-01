@@ -3,6 +3,7 @@ read -p "Enter team name: " TEAM_NAME
 TEAM_NAME_TIME=$(date +%H:%M:%S)
 TEAM_NAME="${TEAM_NAME// /_}"
 
+
 read -p "Enter number of members: " N
 
 NAMES=()
